@@ -15,7 +15,7 @@ int realloccols(int numcols,const int type[],void **cols,int numrows){
     for(i=0;i<numcols;i++){
         switch(type[i]){
             case TIP_INT:
-                cols[i] = realloc(cols[i],numrows*sizeof(int));
+                cols[i] = realloc(cols[i],numrows*sizeof(long));
             break;
             case TIP_FLOAT:
                 cols[i] = realloc(cols[i],numrows*sizeof(double));
@@ -31,7 +31,7 @@ int realloccols(int numcols,const int type[],void **cols,int numrows){
 int initcols(int numcols, const int type[], void ***cols,int numrows){
     *cols = NULL;
     *cols = (void **)malloc(numcols*sizeof(void*));
-    // realloccols(numcols,type,cols,numrows);
+    realloccols(numcols,type,*cols,numrows);
     return(0);
 }
 
@@ -84,13 +84,12 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
     mycols = *cols;
 
     for(i=skiprecs;i<rec;i++){
-        // printf("\n%lu,%lu\n",sor,eor[i]);
         ptr = &buff[0?0:(eor[i-1]+1)];
         t=0;
         do{
             switch(type[t]){
                 case TIP_INT:
-                    ((int*)mycols[t])[i-skiprecs] = atoi(ptr);
+                    ((long*)mycols[t])[i-skiprecs] = atol(ptr);
                 break;
                 case TIP_FLOAT:
                     ((double*)mycols[t])[i-skiprecs] = atof(ptr);
