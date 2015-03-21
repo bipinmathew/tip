@@ -12,8 +12,9 @@ int main(int argc, char *argv[]){
     FILE *fp;
     unsigned long i,numrecs;
 
-    int type[9] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT,TIP_INT,TIP_FLOAT,TIP_FLOAT,TIP_INT,TIP_FLOAT};
+    // int type[9] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT,TIP_INT,TIP_FLOAT,TIP_FLOAT,TIP_INT,TIP_FLOAT};
     // int type[9] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT};
+    int type[2] = {TIP_INT,TIP_INT};
 
     void **cols;
     if(argc < 2){
@@ -25,10 +26,10 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    numrecs = ftip(fp,9,type,&cols,',','\n',1);
+    numrecs = ftip(fp,2,type,&cols,' ','\n',1);
 
     for(i=0;i<numrecs;i++){
-         printf("%d \n",((int*)cols[1])[i]);
+         printf("%lu \n",((long*)cols[1])[i]);
     }
 
     fclose(fp);
