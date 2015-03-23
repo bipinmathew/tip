@@ -8,6 +8,8 @@
 #include "tip.h"
 
 typedef struct int_col{
+    unsigned long numrows;
+    long *d;
 } int_col;
 
 int realloccols(int numcols,const int type[],void **cols,int numrows){
