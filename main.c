@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
     numrecs = ftip(fp,2,type,&cols,' ','\n',1);
 
     for(i=0;i<numrecs;i++){
-         printf("%lu \n",((long*)cols[1])[i]);
+         printf("%lu \n",((int_col*)cols[1])->d[i]);
     }
 
     fclose(fp);

@@ -7,20 +7,16 @@
 #include <sys/mman.h>
 #include "tip.h"
 
-typedef struct int_col{
-    unsigned long numrows;
-    long *d;
-} int_col;
 
 int realloccols(int numcols,const int type[],void **cols,int numrows){
     int i;
     for(i=0;i<numcols;i++){
         switch(type[i]){
             case TIP_INT:
-                cols[i] = realloc(cols[i],numrows*sizeof(long));
+                ((int_col*)cols[i])->d = realloc(((int_col*)cols[i])->d,numrows*sizeof(long));
             break;
             case TIP_FLOAT:
-                cols[i] = realloc(cols[i],numrows*sizeof(double));
+                ((double_col*)cols[i])->d = realloc(((double_col*)cols[i])->d,numrows*sizeof(double));
             break;
             case TIP_STR:
                 cols[i] = realloc(cols[i],numrows*sizeof(char*));
@@ -31,8 +27,22 @@ int realloccols(int numcols,const int type[],void **cols,int numrows){
 }
 
 int initcols(int numcols, const int type[], void ***cols,int numrows){
+    unsigned long t;
     *cols = NULL;
     *cols = (void **)malloc(numcols*sizeof(void*));
+    for(t=0;t<numcols;t++){
+        switch(type[t]){
+            case TIP_INT:
+                (*cols)[t] = (int_col **)malloc(sizeof(int_col *));
+            break;
+            case TIP_FLOAT:
+                (*cols)[t] = (double_col **)malloc(sizeof(double_col *));
+            break;
+            case TIP_STR:
+                // cols[i,t] = realloc(cols[i],numrows*sizeof(char*));
+            break;
+        }
+    }
     realloccols(numcols,type,*cols,numrows);
     return(0);
 }
@@ -91,10 +101,10 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
         do{
             switch(type[t]){
                 case TIP_INT:
-                    ((long*)mycols[t])[i-skiprecs] = atol(ptr);
+                    ((int_col*)mycols[t])->d[i-skiprecs] = atol(ptr);
                 break;
                 case TIP_FLOAT:
-                    ((double*)mycols[t])[i-skiprecs] = atof(ptr);
+                    ((double_col*)mycols[t])->d[i-skiprecs] = atof(ptr);
                 break;
                 case TIP_STR:
                     // cols[i,t] = realloc(cols[i],numrows*sizeof(char*));

@@ -14,6 +14,22 @@
 #define TIP_FLOAT 1
 #define TIP_STR 2
 
+typedef struct int_col{
+    unsigned long numrows;
+    long *d;
+} int_col;
+
+typedef struct double_col{
+    unsigned long numrows;
+    double *d;
+} double_col;
+
+typedef struct str_col{
+    unsigned long numrows;
+    unsigned char *d;
+} str_col;
+
+
 
 unsigned long ftip(FILE *fp,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs);
 
