@@ -26,16 +26,31 @@ typedef struct double_col{
 
 typedef struct str_col{
     unsigned long numrows;
+    unsigned long *offset;
     unsigned char *d;
 } str_col;
 
+
+size_t memcspn(const char *string, size_t strlen, const char *notin, size_t notinlen)
+{
+    register const char *s1, *s2;
+    int i,j;
+
+    for (s1 = string, i = 0; i<strlen; s1++, i++) {
+            for(s2 = notin, j = 0; *s2 != *s1 && j < notinlen; s2++, j++)
+                    /* EMPTY */ ;
+            if (j != notinlen)
+                    break;
+    }
+    return s1 - string;
+}
 
 
 unsigned long ftip(FILE *fp,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs);
 
 unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs);
 
-off_t fsize(int fd);
+long fsize(FILE *fp);
 
 
 

@@ -47,26 +47,37 @@ int initcols(int numcols, const int type[], void ***cols,int numrows){
     return(0);
 }
 
-off_t fsize(int fd){
-    off_t current,size;
-    current = lseek(fd,0,SEEK_CUR);
-    size = lseek(fd,0,SEEK_END);
-    lseek(fd,current,SEEK_SET);
+long fsize(FILE* fp){
+    long current,size;
+    current = ftell(fp);
+    printf("Current Location: %lu \n",current);
+    fseek(fp,0,SEEK_END);
+    size = ftell(fp);
+    fseek(fp,current,SEEK_SET);
     return(size);
 
 }
 
 unsigned long ftip(FILE *fp,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs){
     int fd;
-    off_t f_size;
-    char *data;
+    long f_size,i;
+    char *mm,*data;
     unsigned long numrecs;
+    off_t current;
 
+    f_size = fsize(fp);
     fd = fileno(fp);
-    f_size = fsize(fd);
-    data = mmap((caddr_t)0,f_size,PROT_READ,MAP_SHARED,fd,0);
+    current = lseek(fd,(size_t)ftell(fp),SEEK_SET); // Move descriptor handle to same place as FILE pointer.
+    printf("Afer location: %lu",current);
+
+    mm = mmap((caddr_t)0,f_size,PROT_READ,MAP_SHARED,fd,0);
+    data = &mm[current];
+    printf("Data preview...\r\n");
+    for(i=0;i<10;i++){
+        printf("%c",data[i]);
+    }
     numrecs = tip(data,f_size,numcols,type, cols,delim,eordelim,skiprecs);
-    if(munmap(data,f_size)==-1){
+    if(munmap(mm,f_size)==-1){
         perror("Failed to un-memory map data.");
     }
     return(numrecs);
