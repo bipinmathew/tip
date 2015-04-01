@@ -46,8 +46,38 @@ size_t memcspn(const char *string, size_t strlen, const char *notin, size_t noti
 }
 
 
+
+/**
+ * @brief Parse character delimited file.
+ *
+ * @param fp FILE pointer
+ * @param numcols number of cols in data
+ * @param type[] type of columns can be TIP_INT, TIP_FLOAT, TIP_STRING
+ * @param cols on return will point to an array of pointers of type int_col,
+ * float_col or str_col depending on the types.
+ * @param delim character delimiter to use in parsing file.
+ * @param eordelim end of row delimiter.
+ * @param skiprecs number of rows to skip.
+ *
+ * @return number of records passed.
+ */
 unsigned long ftip(FILE *fp,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs);
 
+/**
+ * @brief Parse character delimited memory area.
+ *
+ * @param buff pointer to memory area to parse.
+ * @param buffsize number of bytes to parse.
+ * @param numcols number of cols in data
+ * @param type[] type of columns can be TIP_INT, TIP_FLOAT, TIP_STRING
+ * @param cols on return will point to an array of pointers of type int_col,
+ * float_col or str_col depending on the types.
+ * @param delim character delimiter to use in parsing file.
+ * @param eordelim end of row delimiter.
+ * @param skiprecs number of rows to skip.
+ *
+ * @return number of records passed.
+ */
 unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs);
 
 long fsize(FILE *fp);

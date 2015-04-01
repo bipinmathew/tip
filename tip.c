@@ -100,7 +100,7 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
     mycols = *cols;
 
     for(i=skiprecs;i<rec;i++){
-        ptr = &buff[0?0:(eor[i-1]+1)];
+        ptr = &buff[(i<1)?0:(eor[i-1]+1)];
         t=0;
         do{
             switch(type[t]){
