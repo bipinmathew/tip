@@ -10,5 +10,10 @@ libtip.so: tip.o
 main: main.c libtip.so
 	gcc -L. -Wl,-rpath=`pwd .` -Wall -o main main.c -ltip
 
+docs: tip doxygen.config
+	doxygen doxygen.config	
+
 clean:
-	rm -f tip.o libtip.so main main.o
+	rm -rf tip.o libtip.so main main.o ./docs/*
+
+all: tip docs
