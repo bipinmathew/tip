@@ -10,16 +10,30 @@
 
 int realloccols(int numcols,const int type[],void **cols,int numrows){
     int i;
+    unsigned long avgstrlen;
     for(i=0;i<numcols;i++){
         switch(type[i]){
             case TIP_INT:
-                ((int_col*)cols[i])->d = realloc(((int_col*)cols[i])->d,numrows*sizeof(long));
+                ((col_int*)cols[i])->d = realloc(((col_int*)cols[i])->d,numrows*sizeof(long));
             break;
             case TIP_FLOAT:
-                ((double_col*)cols[i])->d = realloc(((double_col*)cols[i])->d,numrows*sizeof(double));
+                ((col_double*)cols[i])->d = realloc(((col_double*)cols[i])->d,numrows*sizeof(double));
             break;
             case TIP_STR:
-                cols[i] = realloc(cols[i],numrows*sizeof(char*));
+                avgstrlen = (((col_str*)cols[i])->_numbytes==0) ? 128 : (((col_str*)cols[i])->_numbytes / ((col_str*)cols[i])->_numrows);
+                // We do this check in case we actual want to reclaim some
+                // memory
+                if(((col_str*)cols[i])->_numbytes<numrows*avgstrlen*sizeof(char)){
+                    ((col_str*)cols[i])->d      = realloc(((col_str*)cols[i])->d,numrows*avgstrlen*sizeof(char));
+                    ((col_str*)cols[i])->_numbytes = numrows*avgstrlen*sizeof(char);
+                }
+                else{
+                    ((col_str*)cols[i])->d      = realloc(((col_str*)cols[i])->d,((col_str*)cols[i])->numbytes);
+                    ((col_str*)cols[i])->_numbytes = ((col_str*)cols[i])->numbytes;
+                }
+
+                ((col_str*)cols[i])->offset = realloc(((col_str*)cols[i])->offset,numrows*sizeof(unsigned long));
+                ((col_str*)cols[i])->_numrows  += numrows;
             break;
         }
     }
@@ -33,13 +47,17 @@ int initcols(int numcols, const int type[], void ***cols,int numrows){
     for(t=0;t<numcols;t++){
         switch(type[t]){
             case TIP_INT:
-                (*cols)[t] = (int_col **)malloc(sizeof(int_col *));
+                (*cols)[t] = (col_int **)malloc(sizeof(col_int *));
             break;
             case TIP_FLOAT:
-                (*cols)[t] = (double_col **)malloc(sizeof(double_col *));
+                (*cols)[t] = (col_double **)malloc(sizeof(col_double *));
             break;
             case TIP_STR:
-                // cols[i,t] = realloc(cols[i],numrows*sizeof(char*));
+                (*cols)[t] = (col_str **)malloc(sizeof(col_str *));
+                ((col_str*)cols[t])->_numrows=0;
+                ((col_str*)cols[t])->_numbytes=0;
+                ((col_str*)cols[t])->numrows=0;
+                ((col_str*)cols[t])->numbytes=0;
             break;
         }
     }
@@ -77,7 +95,7 @@ unsigned long ftip(FILE *fp,int numcols,const int type[], void ***cols, unsigned
 }
 
 unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int type[], void ***cols, unsigned char delim, unsigned char eordelim,unsigned long skiprecs){
-    unsigned long i,t,*eor,rec=0;
+    unsigned long i,t,*eor,rec=0,offset=0;
     const char *ptr;
     void **mycols;
 
@@ -105,12 +123,16 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
         do{
             switch(type[t]){
                 case TIP_INT:
-                    ((int_col*)mycols[t])->d[i-skiprecs] = atol(ptr);
+                    ((col_int*)mycols[t])->d[i-skiprecs] = atol(ptr);
                 break;
                 case TIP_FLOAT:
-                    ((double_col*)mycols[t])->d[i-skiprecs] = atof(ptr);
+                    ((col_double*)mycols[t])->d[i-skiprecs] = atof(ptr);
                 break;
                 case TIP_STR:
+                    for(offset=0;offset<1000;offset++)
+                        if(ptr[offset]==delim||ptr[offset]==eordelim)
+                            break;
+                    ((col_double*)mycols[t])->d = memcpy(((col_double*)mycols[t])->d,ptr,offset*sizeof(char));
                     // cols[i,t] = realloc(cols[i],numrows*sizeof(char*));
                 break;
             }
