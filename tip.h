@@ -81,7 +81,8 @@ size_t memcspn(const char *string, size_t strlen, const char *notin, size_t noti
     return s1 - string;
 }
 
-
+int realloccols(int numcols,const int type[],void ***cols,int numrows);
+int initcols(int numcols, const int type[], void ***cols,int numrows);
 
 /**
  * @brief Parse character delimited file.
