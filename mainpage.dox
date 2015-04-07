@@ -1,0 +1,7 @@
+/**
+* @file mainpage.dox
+* \mainpage Tip is a library for parsing CSVs
+*/
+
+
+Tip is a library for parsing character delimited text files.
