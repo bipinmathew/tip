@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[]){
     FILE *fp;
-    unsigned long i,numrecs;
+    unsigned long i,j,numrecs,start;
 
     // int type[9] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT,TIP_INT,TIP_FLOAT,TIP_FLOAT,TIP_INT,TIP_FLOAT};
     int type[4] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT};
@@ -28,11 +28,16 @@ int main(int argc, char *argv[]){
 
     numrecs = ftip(fp,4,type,&cols,'\t','\n',0);
 
+    /* start = 0;
     for(i=0;i<numrecs;i++){
-         printf("%lu \n",((col_str*)cols[0])->offset[i]);
-    }
+        for(j=start;j<((col_str*)cols[0])->offset[i];j++)
+         printf("%c",((col_str*)cols[0])->d[j]);
+        start = ((col_str*)cols[0])->offset[i];
+        printf("\n");
+    } */
 
     fclose(fp);
+    freecols(4,type,&cols);
     return(0);
 
 }

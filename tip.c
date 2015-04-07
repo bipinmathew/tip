@@ -16,12 +16,16 @@ int initcols(int numcols, const int type[], void ***cols,int numrows){
         switch(type[t]){
             case TIP_INT:
                 mycols[t] = (col_int *)malloc(sizeof(col_int));
+                ((col_int*)mycols[t])->d = NULL;
             break;
             case TIP_FLOAT:
                 mycols[t] = (col_double *)malloc(sizeof(col_double));
+                ((col_double*)mycols[t])->d = NULL;
             break;
             case TIP_STR:
                 mycols[t] = (col_str *)malloc(sizeof(col_str));
+                ((col_str*)mycols[t])->d = NULL;
+                ((col_str*)mycols[t])->offset = NULL;
                 ((col_str*)mycols[t])->_numrows=0;
                 ((col_str*)mycols[t])->_numbytes=0;
                 ((col_str*)mycols[t])->numrows=0;
@@ -51,7 +55,7 @@ int realloccols(int numcols,const int type[],void ***cols,int numrows){
             case TIP_STR:
                 ((col_str*)mycols[i])->offset = realloc(((col_str*)mycols[i])->offset,numrows*sizeof(unsigned long));
                 ((col_str*)mycols[i])->_numrows=numrows;
-                if(((col_str*)mycols[i])->_numbytes==0)
+                if(((col_str*)mycols[i])->numrows==0)
                     avgstrlen = 128;
                 else
                     avgstrlen = ((col_str*)mycols[i])->numbytes / ((col_str*)mycols[i])->numrows;
@@ -65,6 +69,32 @@ int realloccols(int numcols,const int type[],void ***cols,int numrows){
         }
     }
     *cols = mycols;
+    return(0);
+}
+
+
+int freecols(int numcols,const int type[],void ***cols){
+    void **mycols;
+    unsigned int i;
+    mycols = *cols;
+    for(i=0;i<numcols;i++){
+        switch(type[i]){
+            case TIP_INT:
+                free(((col_int*)mycols[i])->d);
+                free(mycols[i]);
+            break;
+            case TIP_FLOAT:
+                free(((col_double*)mycols[i])->d);
+                free(mycols[i]);
+            break;
+            case TIP_STR:
+                free(((col_str*)mycols[i])->offset);
+                free(((col_str*)mycols[i])->d);
+                free(mycols[i]);
+            break;
+        }
+    }
+    free(mycols);
     return(0);
 }
 
@@ -133,9 +163,7 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
                     ((col_double*)mycols[t])->d[i-skiprecs] = atof(ptr);
                 break;
                 case TIP_STR:
-                    for(offset=0;offset<1000;offset++)
-                        if(ptr[offset]==delim||ptr[offset]==eordelim)
-                            break;
+                    for(offset=0;ptr[offset]!=delim&&ptr[offset]!=eordelim;offset++);
                     memcpy(&((col_str*)mycols[t])->d[((col_str*)mycols[t])->numbytes],ptr,offset*sizeof(char));
                     ((col_str*)mycols[t])->numbytes += offset*sizeof(char);
                     if(((col_str*)mycols[t])->numrows == 0){

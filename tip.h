@@ -82,6 +82,7 @@ size_t memcspn(const char *string, size_t strlen, const char *notin, size_t noti
 }
 
 int realloccols(int numcols,const int type[],void ***cols,int numrows);
+int freecols(int numcols,const int type[],void ***cols);
 int initcols(int numcols, const int type[], void ***cols,int numrows);
 
 /**
