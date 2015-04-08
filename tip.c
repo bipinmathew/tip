@@ -131,10 +131,11 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
     unsigned long i,t,*eor,rec=0,offset=0;
     const char *ptr;
     void **mycols;
+    int numrecs;
 
     mycols = *cols;
+    numrecs = 1024;
 
-    int numrecs = 1024;
     initcols(numcols,type,&mycols,numrecs);
     eor = calloc(numrecs,sizeof(unsigned long));
 
@@ -174,8 +175,6 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
                         ((col_str*)mycols[t])->offset[((col_str*)mycols[t])->numrows]=((col_str*)mycols[t])->offset[((col_str*)mycols[t])->numrows-1]+offset;
                         ((col_str*)mycols[t])->numrows+= 1;
                     }
-
-                    // cols[i,t] = realloc(cols[i],numrows*sizeof(char*));
                 break;
             }
             ptr = (char *)memchr(ptr,delim,&buff[eor[i]]-ptr);
@@ -183,7 +182,7 @@ unsigned long tip(const char *buff,unsigned long buffsize,int numcols,const int 
         }while((t++)<(numcols-1));
 
     }
-    // Lets get some memory back.
+    /* Lets get some memory back. */
     realloccols(numcols,type,&mycols,rec-skiprecs);
     free(eor);
     *cols = mycols;

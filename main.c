@@ -10,7 +10,8 @@
 
 int main(int argc, char *argv[]){
     FILE *fp;
-    unsigned long i,j,numrecs,start;
+    // unsigned long i,j,start;
+    unsigned long numrecs;
 
     // int type[9] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT,TIP_INT,TIP_FLOAT,TIP_FLOAT,TIP_INT,TIP_FLOAT};
     int type[4] = {TIP_STR,TIP_INT,TIP_INT,TIP_INT};
@@ -35,6 +36,8 @@ int main(int argc, char *argv[]){
         start = ((col_str*)cols[0])->offset[i];
         printf("\n");
     } */
+
+    printf("Tiped %lu records \n",numrecs);
 
     fclose(fp);
     freecols(4,type,&cols);

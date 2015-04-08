@@ -62,29 +62,23 @@ typedef struct col_str{
     unsigned long numrows; /**<  actual number of rows in column */
     unsigned long _numbytes; /**< internal count of bytes in column */
     unsigned long numbytes; /**< total number of bytes loaded */
-    unsigned long *offset;
+    unsigned long *offset; /**< array containing offsets to the end of each string. For example d[offset[i]-1] is the last character of the ith record for this column of strings.*/
     unsigned char *d; /**< pointer to the actual data */
 } col_str;
 
-
-size_t memcspn(const char *string, size_t strlen, const char *notin, size_t notinlen)
-{
-    register const char *s1, *s2;
-    int i,j;
-
-    for (s1 = string, i = 0; i<strlen; s1++, i++) {
-            for(s2 = notin, j = 0; *s2 != *s1 && j < notinlen; s2++, j++)
-                    /* EMPTY */ ;
-            if (j != notinlen)
-                    break;
-    }
-    return s1 - string;
-}
-
 int realloccols(int numcols,const int type[],void ***cols,int numrows);
-int freecols(int numcols,const int type[],void ***cols);
 int initcols(int numcols, const int type[], void ***cols,int numrows);
 
+/**
+ * @brief free memory associated with parsed column data.
+ *
+ * @param[in] numcols number of cols in parsed data.
+ * @param[in] type[] type of columns can be TIP_INT, TIP_FLOAT, TIP_STRING
+ * @param[in] cols array of pointers to allocated data.
+ *
+ * @return 0 in all cases.
+ */
+int freecols(int numcols,const int type[],void ***cols);
 /**
  * @brief Parse character delimited file.
  *
