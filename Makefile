@@ -20,9 +20,9 @@ libtip.a: tip.o
 	ar rcs libtip.a tip.o
 
 main: main.c libtip.so
-	$(CC) $(CCFLAGS) -L. -Wl,-rpath=`pwd .` -Wall -o main main.c -ltip
+	$(CC) $(CCFLAGS) -static -L. -o main main.c -ltip
 
-docs: tip.o doxygen.config
+docs: tip.o doxygen.config mainpage.dox 
 	doxygen doxygen.config	
 
 clean:
