@@ -26,4 +26,4 @@ docs: tip.o doxygen.config mainpage.dox
 	doxygen doxygen.config	
 
 clean:
-	rm -rf tip.o libtip.so main main.o ./docs/*
+	rm -rf tip.o libtip.so libtip.a main main.o ./docs/*
